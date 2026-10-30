@@ -77,7 +77,7 @@ const clips = [
   {
     name: "שלשה מהכנף", quarter: "Q3", clock: 242, score: [51, 49], points: 3, made: 3.5,
     offense: {
-      7: [[0, 960, 300], [1.4, 1100, 470], [4.2, 1090, 450], [5, 1090, 450]],
+      7: [[0, 1180, 290], [1.4, 1100, 470], [4.2, 1090, 450], [5, 1090, 450]],
       4: [[0, 800, 700], [1.0, 790, 620], [5, 780, 620]],
       23: [[0, 1000, 420], [0.8, 1040, 400], [5, 1040, 400]],
       11: [[0, 380, 170], [5, 380, 170]],
@@ -90,7 +90,7 @@ const clips = [
       { kind: "shot", who: 7, to: 3.5 },
       { kind: "drop", to: 4.0 },
     ],
-    events: [[0.5, "🧱", "חסימה של #23"], [2.3, "🏀", "זריקה מ־7.6 מ׳"], [3.5, "🔥", "שלשה! נוסף להיילייטס"]],
+    events: [[0.5, "🧱", "סקרין של #23"], [2.3, "🏀", "זריקה מ־7.6 מ׳"], [3.5, "🔥", "שלשה! נוסף להיילייטס"]],
   },
   {
     name: "אסיסט", quarter: "Q4", clock: 72, score: [66, 65], points: 2, made: 2.4,
@@ -220,25 +220,49 @@ if (player) {
   }
 
   let lastArc = "";
+  let tagBelow = true;
+  const MIN_GAP = 60;
   function frame(t) {
     const ci = Math.min(Math.floor(t / CLIP_LEN), clips.length - 1);
     const clip = clips[ci];
     const lt = t - ci * CLIP_LEN;
 
+    const off = {};
+    for (const n of OFFENSE) off[n] = pos(clip, n, lt);
+    // Defenders trail their man slightly and sit between him and the rim.
+    const def = {};
     for (const n of OFFENSE) {
-      const [x, y] = pos(clip, n, lt);
-      offEls[n].setAttribute("transform", `translate(${x} ${y})`);
-      // Defenders trail their man slightly and sit between him and the rim.
       const [mx, my] = pos(clip, n, Math.max(0, lt - 0.3));
-      const dx = lerp(mx, HOOP.x, 0.2) + Math.sin(lt * 3 + n) * 8;
-      const dy = lerp(my, HOOP.y, 0.2) + Math.cos(lt * 2.6 + n) * 8;
-      defEls[n].setAttribute("transform", `translate(${dx} ${dy})`);
-      if (n === 7) {
-        trackBox.setAttribute("x", x - 48);
-        trackBox.setAttribute("y", y - 60);
-        trackTag.setAttribute("transform", `translate(${x - 75} ${y - 62})`);
+      def[n] = [lerp(mx, HOOP.x, 0.2) + Math.sin(lt * 3 + n) * 8, lerp(my, HOOP.y, 0.2) + Math.cos(lt * 2.6 + n) * 8];
+    }
+    // Keep every jersey readable: push defenders out of anyone else's space.
+    const everyone = () => [...OFFENSE.map((n) => off[n]), ...OFFENSE.map((n) => def[n])];
+    for (let pass = 0; pass < 4; pass++) {
+      for (const n of OFFENSE) {
+        const d = def[n];
+        for (const o of everyone()) {
+          if (o === d) continue;
+          const gap = Math.hypot(d[0] - o[0], d[1] - o[1]);
+          if (gap < MIN_GAP) {
+            const ux = gap ? (d[0] - o[0]) / gap : 0, uy = gap ? (d[1] - o[1]) / gap : -1;
+            d[0] = o[0] + ux * MIN_GAP;
+            d[1] = o[1] + uy * MIN_GAP;
+          }
+        }
       }
     }
+    for (const n of OFFENSE) {
+      offEls[n].setAttribute("transform", `translate(${off[n][0]} ${off[n][1]})`);
+      defEls[n].setAttribute("transform", `translate(${def[n][0]} ${def[n][1]})`);
+    }
+
+    // #7's tag goes under him, or above when someone stands there.
+    const [x, y] = off[7];
+    const blocked = (top) => everyone().some((o) => o !== off[7] && o[0] > x - 105 && o[0] < x + 105 && o[1] > top - 30 && o[1] < top + 70);
+    if (blocked(tagBelow ? y + 62 : y - 112) && !blocked(tagBelow ? y - 112 : y + 62)) tagBelow = !tagBelow;
+    trackBox.setAttribute("x", x - 48);
+    trackBox.setAttribute("y", y - 56);
+    trackTag.setAttribute("transform", `translate(${x - 75} ${tagBelow ? y + 112 : y - 62})`);
 
     const b = ballAt(clip, lt);
     ball.setAttribute("cx", b.x);
