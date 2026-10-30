@@ -19,7 +19,7 @@ const dayKey = (d) => new Intl.DateTimeFormat("en-CA", { timeZone: TZ }).format(
 const fmtDate = new Intl.DateTimeFormat("he-IL", { timeZone: TZ, day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
 const fmtShort = new Intl.DateTimeFormat("he-IL", { timeZone: TZ, day: "numeric", month: "numeric" });
 const country = (notes) => (notes || "").split("|")[0].trim().toUpperCase();
-const flag = (cc) => /^[A-Z]{2}$/.test(cc) ? String.fromCodePoint(...[...cc].map((c) => 0x1f1a5 + c.charCodeAt(0))) + " " + cc : "–";
+const flag = (cc) => /^[A-Z]{2}$/.test(cc) ? cc : "–";
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 
 async function load() {
