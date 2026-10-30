@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>HoopReel · דשבורד לידים</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/dashboard/dashboard.css">
+</head>
+<body>
+  <header class="top">
+    <a class="logo" href="/" aria-label="HoopReel, לאתר">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M2 16h28M16 2v28M6 6c5 4 5 16 0 20M26 6c-5 4-5 16 0 20" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      <span>Hoop<b>Reel</b></span>
+    </a>
+    <h1>דשבורד לידים</h1>
+    <div class="top-actions">
+      <span class="updated" id="updated">טוען…</span>
+      <button class="btn-ghost" id="refresh" type="button">רענון</button>
+      <button class="btn-ghost" id="export" type="button">ייצוא CSV</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <p class="alert" id="alert" hidden></p>
+
+    <section class="kpis" aria-label="מדדים">
+      <div class="kpi"><span>סה״כ נרשמים</span><b id="kTotal">–</b></div>
+      <div class="kpi"><span>היום</span><b id="kToday">–</b></div>
+      <div class="kpi"><span>7 ימים אחרונים</span><b id="kWeek">–</b><small id="kWeekDelta"></small></div>
+      <div class="kpi split">
+        <span>פילוח לפי סוג</span>
+        <div class="bar" id="mixBar" aria-hidden="true"></div>
+        <ul class="legend" id="mixLegend"></ul>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <h2>הרשמות ב־30 הימים האחרונים</h2>
+      </div>
+      <div class="chart" id="chart" role="img" aria-label="גרף הרשמות יומי"></div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <h2>כל הלידים <small id="shown"></small></h2>
+        <div class="filters">
+          <input id="search" type="search" placeholder="חיפוש לפי שם או מייל" aria-label="חיפוש">
+          <div class="chips" role="group" aria-label="סינון לפי סוג">
+            <button class="chip is-on" data-type="">הכל</button>
+            <button class="chip" data-type="parent">הורים</button>
+            <button class="chip" data-type="player">שחקנים</button>
+            <button class="chip" data-type="coach">מאמנים</button>
+          </div>
+          <select id="status" aria-label="סינון לפי סטטוס">
+            <option value="">כל הסטטוסים</option>
+            <option value="new">חדש</option>
+            <option value="emailed">נשלח מייל</option>
+            <option value="unsubscribed">הוסר</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>שם</th><th>מייל</th><th>סוג</th><th>סטטוס</th><th>מקור</th><th>מדינה</th>
+              <th><button class="sort" id="sort" type="button">תאריך הרשמה <span id="sortDir">↓</span></button></th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+        <p class="empty" id="empty" hidden>אין לידים שמתאימים לסינון.</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="/dashboard/dashboard.js"></script>
+</body>
+</html>
