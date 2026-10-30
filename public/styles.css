@@ -216,6 +216,13 @@ h3 { margin: 0 0 8px; font-size: 21px; font-weight: 700; }
 .clips::-webkit-scrollbar { display: none; }
 .clip { flex: none; font-size: 13px; padding: 6px 12px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); white-space: nowrap; }
 .clip.hot { background: rgba(255,107,26,.15); border-color: rgba(255,107,26,.5); color: #ffd3b4; }
+.clip { transition: background .3s, border-color .3s, color .3s; }
+.clip.is-on { background: rgba(255,107,26,.22); border-color: var(--accent); color: #fff; }
+.clip-tag text { fill: #fff; font: 800 64px "Rubik", sans-serif; }
+.clip-tag #clipNum { fill: var(--accent-2); font-size: 40px; }
+.clip-tag .clip-sub { fill: rgba(255,255,255,.6); font-size: 34px; font-weight: 500; }
+#players, #track, #ball, #shotArc { transition: opacity .25s; }
+.court.cut #players, .court.cut #track, .court.cut #ball, .court.cut #shotArc { opacity: 0; }
 
 /* ---------- split / scout card ---------- */
 .split { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 6vw, 80px); align-items: center; }
@@ -380,7 +387,7 @@ h3 { margin: 0 0 8px; font-size: 21px; font-weight: 700; }
   .score { gap: 6px; padding: 4px 8px; }
   .score b { font-size: 15px; }
   .team { display: none; }
-  .events { top: 46px; inset-inline-start: 8px; width: 70%; }
+  .events { top: 46px; inset-inline-start: 8px; width: 38%; }
   .event { font-size: 12px; padding: 6px 9px; }
   .scout { grid-template-columns: 1fr; }
   .scout-photo { min-height: 200px; }
@@ -391,6 +398,8 @@ h3 { margin: 0 0 8px; font-size: 21px; font-weight: 700; }
   .form { padding: 20px; }
 }
 @media (max-width: 560px) {
-  .events { width: 64%; }
+  .events { width: 39%; }
+  .event { font-size: 11px; gap: 6px; }
+  .event small { display: none; }
   .event:nth-child(n+2) { display: none; }
 }
