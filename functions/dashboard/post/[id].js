@@ -13,7 +13,7 @@ export async function onRequestGet({ params, env }) {
   if (UUID.test(id) && supabaseConfigured(env)) {
     const res = await supabaseGet(
       env,
-      `content_drafts?select=id,created_at,slug,title,excerpt,body,audience,status,critic_score,critic_notes,published_at&id=eq.${id}&limit=1`,
+      `content_drafts?select=id,created_at,slug,title,excerpt,body,audience,status,critic_notes,owner_notes,published_at&id=eq.${id}&limit=1`,
     );
     if (res.ok) [post] = await res.json();
   }
@@ -34,7 +34,8 @@ export async function onRequestGet({ params, env }) {
     description: post.excerpt || "",
     body: `    <article class="b-post">
       <div class="b-draft">
-        <b>${esc(STATUS[post.status] || post.status)}</b> · ציון המבקר ${esc(post.critic_score ?? "–")}/10${live}
+        <b>${esc(STATUS[post.status] || post.status)}</b>${live}
+        ${post.owner_notes ? `<details open><summary>ההערות שלך</summary>${renderMarkdown(post.owner_notes)}</details>` : ""}
         ${post.critic_notes ? `<details><summary>הערות המבקר</summary>${renderMarkdown(post.critic_notes)}</details>` : ""}
       </div>
       <span class="b-meta">${esc(audienceLabel(post.audience))} · ${esc(formatDate(post.published_at || post.created_at))}</span>
