@@ -9,11 +9,17 @@ This repo holds the landing page and the form endpoint. The marketing agents liv
 ```
 public/              static landing page (Hebrew, RTL), served by Cloudflare Pages
   dashboard/         private leads dashboard at /dashboard
+  blog.css           styles for the blog pages
 functions/           Cloudflare Pages Functions
   _middleware.js     password-protects /dashboard and /api/leads (HTTP Basic Auth)
   api/signup.js      POST /api/signup: validates the waitlist form, forwards it to n8n
   api/leads.js       GET /api/leads: reads the waitlist from Supabase for the dashboard
+  blog/index.js      GET /blog: published posts, newest first
+  blog/[slug].js     GET /blog/<slug>: one published post
+  dashboard/post/[id].js  GET /dashboard/post/<id>: private full preview of any draft
 lib/auth.js          the password check used by the middleware
+lib/supabase.js      server-side Supabase REST helper
+lib/blog.js          markdown rendering and the blog page template
 ```
 
 ## How a signup flows
@@ -25,6 +31,10 @@ lib/auth.js          the password check used by the middleware
 ## Leads dashboard
 
 `/dashboard` shows totals, a 30-day signup chart and a searchable, filterable table with CSV export. The browser asks for a password (any username). Data comes from `/api/leads`, which reads Supabase server-side, so the Supabase key never reaches the browser.
+
+## Blog
+
+Posts are written by the n8n content factory (Gemini writer, Gemini critic, approval buttons in Slack #approvals) and stored in the Supabase table `content_drafts`. The blog pages read rows with `channel=blog` and `status=published` on every request (cached for 60 seconds), so approving a post in Slack publishes it without a deploy. The Slack approval message links to `/dashboard/post/<id>` for the full draft.
 
 ## Deploy (Cloudflare Pages)
 
